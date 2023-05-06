@@ -2,22 +2,10 @@ from re import I
 import numpy as np
 from scipy.sparse import csr_matrix
 from sklearn.metrics.pairwise import cosine_similarity
+from .local_data import category
+from .data_matrix import places
 
-category = {
-    "cafe": ["Oasis",'Oasis2'],
-    "karaoke": ['karaoke1', 'karaoke2'],
-    "cinema" : ['asdvasd', 'asdvsD'],
-    "fast food" : ['afadvsd', 'asdfasdfv'],
-    "restourant" : ['afb','asdgv']
-}
 
-places = {
-    'cafe': [1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1],
-    'karaoke': [1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
-    'cinema': [0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-    'fast food': [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0],
-    'restourant': [0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1]
-}
 
 # def cosine_similarity(x, y):
 #     """
@@ -77,17 +65,23 @@ places = {
 
 def matching_algo(user_likes):
 
-    attributes = ['food', 'entertainment', 'cultural & historical', 'outdoor activities', 'trips', 
-                'get drunk', 'student', 'friends', 'family', 'couples', 'tourists']
+    attributes = ['food', 'entertainment', 'cultural & historical', 'outdoor activities', 
+                'trips', 'get drunk', 'student', 'friends', 'family', 'couples', 'tourists']
+
+
     str_list = user_likes.split(',')
     user_prefs = [eval(i) for i in str_list]
   
+
+
     place_attrs = []
     for place in places.values():
         place_attrs.append(place)
     place_attrs = csr_matrix(place_attrs)
 
+
     user_prefs = csr_matrix(user_prefs)
+
 
     similarities = cosine_similarity(user_prefs, place_attrs).flatten()
 

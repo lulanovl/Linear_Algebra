@@ -21,5 +21,15 @@ from .views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', listen),
-    
+    path('food/', get_food),
+    path('entertainment/', get_entertainment),
+    path('cultural & historical/', get_cultural),
+    path('outdoor activities/', get_outdoor),
+    path('trips/', get_trips),
+    path('get drunk/', get_drunk),
+    path('student/', get_student),
+    path('friends/', get_friends),
+    path('family/', get_family),
+    path('couples/', get_couples),
+    path('tourists/', get_tourists),
 ]

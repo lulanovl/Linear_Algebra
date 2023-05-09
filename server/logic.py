@@ -4,91 +4,33 @@ from scipy.sparse import csr_matrix
 from sklearn.metrics.pairwise import cosine_similarity
 from .local_data import category
 from .data_matrix import places
+from sklearn.feature_extraction.text import TfidfVectorizer
+import ast
 
 
 
-# def cosine_similarity(x, y):
-#     """
-#     Compute the cosine similarity between two sparse binary vectors x and y.
-    
-#     Parameters:
-#     x (numpy array): The first sparse binary vector.
-#     y (numpy array): The second sparse binary vector.
-    
-#     Returns:
-#     similarity (float): The cosine similarity between x and y.
-#     """
-#     # Compute the cosine distance between x and y
-#     distance = cosine(x, y)
-    
-#     # Compute the cosine similarity as 1 - cosine distance
-#     similarity = 1 - distance
-    
-#     return similarity
+def recommend_places(place_attributes, user_preferences, k=5):
+    vectorizer = TfidfVectorizer(analyzer=lambda x: x)
 
+    tfidf_matrix = vectorizer.fit_transform(place_attributes.values())
 
-# def csr_matrix(data, indices, indptr, shape):
-#     """
-#     Create a CSR (Compressed Sparse Row) matrix from the given data, indices,
-#     indptr, and shape.
-#     Args:
-#         data (list): The non-zero values in the matrix, row-wise.
-#         indices (list): The column indices corresponding to the non-zero values
-#             in the data list, row-wise.
-#         indptr (list): The indices where each row starts in the data and indices
-#             lists.
-#         shape (tuple): The shape of the matrix, as a tuple of (num_rows, num_cols).
-#  
-#     Returns:
-#         csr_matrix: The CSR matrix created from the given data, indices, indptr,
-#         and shape.
-#     """
-#     num_rows, num_cols = shape
-#     num_nonzeros = len(data)
-#  
-#     # Initialize the row and column index arrays
-#     row_indices = [0] * num_nonzeros
-#     col_indices = [0] * num_nonzeros
-#  
-#     # Fill the row and column index arrays
-#     for i in range(num_rows):
-#         for j in range(indptr[i], indptr[i+1]):
-#             row_indices[j] = i
-#             col_indices[j] = indices[j]
-#  
-#     # Create the CSR matrix
-#     csr_data = data.copy()
-#     csr_row_indices = row_indices.copy()
-#     csr_indptr = indptr.copy()
-#     csr_shape = shape
-#     return (csr_data, csr_row_indices, csr_indptr, csr_shape)
+    user_pref_matrix = vectorizer.transform([user_preferences])
+
+    cosine_similarities = cosine_similarity(user_pref_matrix, tfidf_matrix).flatten()
+
+    indices = cosine_similarities.argsort()[::-1][:k]
+    recommendations = [list(place_attributes.keys())[i] for i in indices]
+
+    return recommendations
 
 def matching_algo(user_likes):
 
-    attributes = ['food', 'entertainment', 'cultural & historical', 'outdoor activities', 
-                'trips', 'get drunk', 'student', 'friends', 'family', 'couples', 'tourists']
+    attributes = ['Food', 'Entertainment', 'Cultural & Historical', 'Outdoor Activities', 
+                'Trips', 'Get Drunk', 'Student', 'Friends', 'Family', 'Couples', 'Tourists']
 
 
-    str_list = user_likes.split(',')
-    user_prefs = [eval(i) for i in str_list]
-  
-
-
-    place_attrs = []
-    for place in places.values():
-        place_attrs.append(place)
-    place_attrs = csr_matrix(place_attrs)
-
-
-    user_prefs = csr_matrix(user_prefs)
-
-
-    similarities = cosine_similarity(user_prefs, place_attrs).flatten()
-
-    sorted_indices = np.argsort(similarities)[::-1]
-    sorted_places = list(places.keys())
-    sorted_places = [sorted_places[i] for i in sorted_indices]
-
+    list_of_strings = ast.literal_eval(user_likes)
+    sorted_places = recommend_places(places, list_of_strings, k=10)
     output = []
     for place in sorted_places:
         if place in category:

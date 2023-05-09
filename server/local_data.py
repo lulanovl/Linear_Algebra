@@ -20,7 +20,7 @@ category = {
     "Nomad": {
         "name" : "Nomad",
         "description" : "Cafe",
-        "tags" : ['Food', 'Get Drunk', 'Family'],
+        "tags" : ['Food', 'Get Drunk', 'Friends', 'Family'],
         "imagePath" : "https://www.google.com/url?sa=i&url=https%3A%2F%2Fru.maps.me%2Fcatalog%2Ffood%2Famenity-cafe%2Fnomad-4611686023147536429%2F&psig=AOvVaw2vWh5DiycPG9WwnfrmRsZa&ust=1683397879863000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKCVn_fn3v4CFQAAAAAdAAAAABAE",
         "address" : "ул.Ленина 70, Нарын",
         "contacts" : ['0704 580 302', 'nomad_coffee_kg']

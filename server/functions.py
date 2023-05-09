@@ -1,5 +1,7 @@
 from scipy.spatial.distance import cosine
 
+
+
 def cosine_similarity(x, y):
     """
     Compute the cosine similarity between two sparse binary vectors x and y.
@@ -20,8 +22,12 @@ def cosine_similarity(x, y):
     return similarity
 
 
+
+
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
+
+
 
 
 
@@ -61,4 +67,56 @@ def csr_matrix(data, indices, indptr, shape):
     csr_indptr = indptr.copy()
     csr_shape = shape
     return (csr_data, csr_row_indices, csr_indptr, csr_shape)
+
+
+
+
+
+
+def sorted(iterable, key=None, reverse=False):
+    # Convert iterable to a list
+    lst = [item for item in iterable]
+
+    # Define the merge function
+    def merge(left, right):
+        result = []
+        i = j = 0
+        while i < len(left) and j < len(right):
+            if key:
+                if key(left[i]) < key(right[j]):
+                    result.append(left[i])
+                    i += 1
+                else:
+                    result.append(right[j])
+                    j += 1
+            else:
+                if left[i] < right[j]:
+                    result.append(left[i])
+                    i += 1
+                else:
+                    result.append(right[j])
+                    j += 1
+        result += left[i:]
+        result += right[j:]
+        return result
+
+    # Define the merge sort function
+    def merge_sort(lst):
+        if len(lst) <= 1:
+            return lst
+        mid = len(lst) // 2
+        left = merge_sort(lst[:mid])
+        right = merge_sort(lst[mid:])
+        return merge(left, right)
+
+    # Sort the list using the merge sort algorithm
+    sorted_lst = merge_sort(lst)
+
+    # Reverse the list if reverse=True
+    if reverse:
+        sorted_lst.reverse()
+
+    return sorted_lst
  
+
+

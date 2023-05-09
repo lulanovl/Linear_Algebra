@@ -2,21 +2,34 @@ from re import I
 import numpy as np
 from scipy.sparse import csr_matrix
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
+import ast
 from .local_data import category
 from .data_matrix import places
-from sklearn.feature_extraction.text import TfidfVectorizer
-import ast
+from .functions import argsort
 
 
 
-def recommend_places(place_attributes, user_preferences, k=5):
+def recommend_places(place_attributes, user_preferences, k=5, n_components = 10):
     vectorizer = TfidfVectorizer(analyzer=lambda x: x)
 
     tfidf_matrix = vectorizer.fit_transform(place_attributes.values())
 
-    user_pref_matrix = vectorizer.transform([user_preferences])
+    # svd
+    svd = TruncatedSVD(n_components=n_components)
+    svd.fit(tfidf_matrix)
+    u = svd.transform(tfidf_matrix)
+    sigma = svd.singular_values_
 
-    cosine_similarities = cosine_similarity(user_pref_matrix, tfidf_matrix).flatten()
+
+    user_pref_matrix = vectorizer.transform([user_preferences])
+    user_pref_reduced = user_pref_matrix.dot(svd.components_.T)
+
+
+    # compute cosine similarity between the user preferences and the place attributes
+    cosine_similarities = cosine_similarity(user_pref_reduced, u.dot(np.diag(sigma))).flatten()
+
 
     indices = cosine_similarities.argsort()[::-1][:k]
     recommendations = [list(place_attributes.keys())[i] for i in indices]
